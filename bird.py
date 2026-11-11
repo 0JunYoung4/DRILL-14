@@ -2,6 +2,8 @@
 
 from pathlib import Path
 
+from bird_motion import FlightMotion
+
 
 SHEET_WIDTH = 918
 SHEET_HEIGHT = 506
@@ -87,6 +89,7 @@ class BirdFlock:
         self.x = canvas_width / 2
         self.y = canvas_height * 0.72
         self.direction = 1
+        self.motion = FlightMotion(self.x)
         shared_image = image if image is not None else get_bird_image()
         self.birds = [
             Bird(self.x + dx, self.y + dy,
@@ -100,8 +103,13 @@ class BirdFlock:
             bird.y = self.y + dy
             bird.face_dir = self.direction
 
-    def update(self):
-        pass
+    def update(self, dt=None):
+        if dt is None:
+            import game_framework
+            dt = game_framework.frame_time
+        self.motion.advance(dt)
+        self.x, self.direction = self.motion.sample()
+        self._sync_birds()
 
     def draw(self):
         for bird in self.birds:
