@@ -86,10 +86,13 @@ class BirdFlock:
 
     def __init__(self, canvas_width=1600, canvas_height=600, image=None):
         self.canvas_width = canvas_width
-        self.x = canvas_width / 2
+        # 몸통 기준점에서 좌우 반전한 그림까지 들어가는 보수적인 여백이다.
+        left = HALF_WIDTH - min(dx for dx, _ in FLOCK_OFFSETS)
+        right = canvas_width - HALF_WIDTH - max(dx for dx, _ in FLOCK_OFFSETS)
+        self.x = (left + right) / 2
         self.y = canvas_height * 0.72
         self.direction = 1
-        self.motion = FlightMotion(self.x)
+        self.motion = FlightMotion(self.x, left, right)
         shared_image = image if image is not None else get_bird_image()
         self.birds = [
             Bird(self.x + dx, self.y + dy,
