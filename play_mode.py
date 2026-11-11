@@ -4,6 +4,7 @@ import game_framework
 from boy import Boy
 from grass import Grass
 from bird import BirdFlock, release_bird_image
+from ball import Ball
 
 boy = None
 flock = None
@@ -52,6 +53,7 @@ def finish():
     boy = None
     flock = None
     release_bird_image()
+    Ball.images.clear()
 
 
 def update():

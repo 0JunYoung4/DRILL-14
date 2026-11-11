@@ -20,6 +20,7 @@ STRIDE_LENGTH_M = 0.8  # 보폭 길이
 RUN_FRAMES_PER_STRIDE = 5
 
 RUN_FRAMES_PER_SECOND = RUN_SPEED_MPS / STRIDE_LENGTH_M * RUN_FRAMES_PER_STRIDE
+IDLE_FRAMES_PER_SECOND = 8.0
 
 class Idle:
     def enter(self, boy):
@@ -30,11 +31,11 @@ class Idle:
         if get_time() - boy.idle_started_at >= 5.0:
             boy.fall_asleep()
         else:
-            boy.frame = (boy.frame + 1) % 8
+            boy.frame = (boy.frame + IDLE_FRAMES_PER_SECOND * game_framework.frame_time) % 8
 
     def draw(self, boy):
         row = 300 if boy.face_dir == 1 else 200
-        boy.image.clip_draw(boy.frame * 100, row, 100, 100, boy.x, boy.y)
+        boy.image.clip_draw(int(boy.frame) * 100, row, 100, 100, boy.x, boy.y)
 
     def space(self, boy):
         boy.fire_ball()
@@ -60,6 +61,7 @@ class Sleep:
 
     def space(self, boy):
         boy.wake_up()
+        boy.fire_ball()
 
     def move(self, boy):
         boy.start_run()
