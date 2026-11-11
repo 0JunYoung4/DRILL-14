@@ -30,6 +30,11 @@ ANCHOR_X = 104
 ANCHOR_Y = 100
 HALF_WIDTH = max(ANCHOR_X, 182 - ANCHOR_X) * DRAW_SCALE
 HALF_HEIGHT = max(ANCHOR_Y, 172 - ANCHOR_Y) * DRAW_SCALE
+BIRD_COUNT = 10
+FLOCK_OFFSETS = tuple(
+    ((column - 2) * 120 + row * 35, (row - 0.5) * 110)
+    for row in range(2) for column in range(5)
+)
 
 _shared_image = None
 
@@ -72,3 +77,32 @@ class Bird:
             'h' if self.face_dir < 0 else '',
             x, y, width * DRAW_SCALE, height * DRAW_SCALE,
         )
+
+
+class BirdFlock:
+    """월드에는 무리 하나를 등록하고, 내부에서 정확히 10마리를 관리한다."""
+
+    def __init__(self, canvas_width=1600, canvas_height=600, image=None):
+        self.canvas_width = canvas_width
+        self.x = canvas_width / 2
+        self.y = canvas_height * 0.72
+        self.direction = 1
+        shared_image = image if image is not None else get_bird_image()
+        self.birds = [
+            Bird(self.x + dx, self.y + dy,
+                 phase=index * FRAME_COUNT / BIRD_COUNT, image=shared_image)
+            for index, (dx, dy) in enumerate(FLOCK_OFFSETS)
+        ]
+
+    def _sync_birds(self):
+        for bird, (dx, dy) in zip(self.birds, FLOCK_OFFSETS):
+            bird.x = self.x + dx
+            bird.y = self.y + dy
+            bird.face_dir = self.direction
+
+    def update(self):
+        pass
+
+    def draw(self):
+        for bird in self.birds:
+            bird.draw()
