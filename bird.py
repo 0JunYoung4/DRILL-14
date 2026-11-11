@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from bird_motion import FlightMotion
+from bird_motion import FlightMotion, animation_frame
 
 
 SHEET_WIDTH = 918
@@ -99,12 +99,16 @@ class BirdFlock:
                  phase=index * FRAME_COUNT / BIRD_COUNT, image=shared_image)
             for index, (dx, dy) in enumerate(FLOCK_OFFSETS)
         ]
+        self._sync_birds()
 
     def _sync_birds(self):
         for bird, (dx, dy) in zip(self.birds, FLOCK_OFFSETS):
             bird.x = self.x + dx
             bird.y = self.y + dy
             bird.face_dir = self.direction
+            bird.frame = animation_frame(
+                self.motion.elapsed, bird.phase, frame_count=FRAME_COUNT,
+            )
 
     def update(self, dt=None):
         if dt is None:

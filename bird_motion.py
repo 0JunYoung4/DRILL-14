@@ -4,6 +4,16 @@ import math
 
 
 FLIGHT_SPEED_PPS = 200.0
+ANIMATION_FPS = 14.0
+
+
+def animation_frame(elapsed, initial_phase=0.0, fps=ANIMATION_FPS, frame_count=14):
+    """위상은 프레임 단위다. 정수 경계의 부동소수점 오차만 보정한다."""
+    phase = elapsed * fps + initial_phase
+    nearest_frame = round(phase)
+    if math.isclose(phase, nearest_frame, rel_tol=0.0, abs_tol=1e-10):
+        phase = nearest_frame
+    return math.floor(phase) % frame_count
 
 
 class FlightMotion:
